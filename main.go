@@ -1,9 +1,15 @@
 package main
 
 import (
-	"github.com/traesk/kafft/cmd"
+	"fmt"
+
+	"github.com/traesk/kafft/util"
 )
 
 func main() {
-	cmd.Execute()
+	//cmd.Execute()
+	err := util.ZipFiles("util")
+	if err != nil {
+		fmt.Println(err)
+	}
 }

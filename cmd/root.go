@@ -33,13 +33,15 @@ var uniquePassword bool
 var dir string
 var printPassword bool
 var save bool
+var folder bool
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.Flags().BoolVarP(&delete, "delete", "d", false, "Delete original file after encryption")
-	rootCmd.Flags().BoolVarP(&uniquePassword, "uniquepassword", "u", false, "Make it possible to set a unique password for each file")
-	rootCmd.Flags().BoolVarP(&printPassword, "printpassword", "p", false, "Print the password set for each file")
+	rootCmd.Flags().BoolVarP(&delete, "delete", "d", false, "Delete original file after encryption.")
+	rootCmd.Flags().BoolVarP(&uniquePassword, "uniquepassword", "u", false, "Make it possible to set a unique password for each file.")
+	rootCmd.Flags().BoolVarP(&printPassword, "printpassword", "p", false, "Print the password set for each file.")
 	rootCmd.Flags().BoolVarP(&save, "save", "s", false, "Write filename and password to file. Unsafe!")
+	rootCmd.Flags().BoolVarP(&folder, "folder", "f", false, "Zips and encrypts a folder, with all its files. ")
 }
 func initConfig() {
 
