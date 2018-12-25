@@ -19,26 +19,6 @@ import (
 	"encoding/hex"
 )
 
-// Descriptive adjectives
-var prefix = []string{
-	"Adorable", "Attractive", "Alluring",
-	"Beautiful", "Bewildered", "Boorish",
-	"Bright", "Confident", "Cheerful",
-	"Cultured", "Clumsy", "Drab",
-	"Dull", "Dynamic", "Disillusioned",
-	"Elegant", "Energetic", "Fair",
-	"Fancy", "Filthy", "Gentle",
-	"Glamorous", "Handsome", "Homely",
-	"Hurt", "Jolly",
-	"Lovely", "Magnificent", "Neat",
-	"Nervous", "Pleasant", "Perfect",
-	"Plucky", "Prim", "Smiling",
-	"Splendid", "Snobbish",
-	"Thoughtful", "Tense", "Timid",
-	"Upset", "Vivacious", "Wonderful",
-	"Worried", "Wild", "Zaftig",
-}
-
 // GenerateName with a given length
 func GenerateName(n int) (string, error) {
 	bytes := make([]byte, n)

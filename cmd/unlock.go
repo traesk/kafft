@@ -15,7 +15,9 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -25,11 +27,26 @@ import (
 
 // openCmd represents the open command
 var openCmd = &cobra.Command{
-	Use:   "open",
+	Use:   "unlock",
 	Short: "Decrypt a file",
 	Long:  `Decrypts a file, pass in the name of the file as argument.`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("No file specified")
+		}
+
+		dir, err := os.Getwd()
+		if err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		}
+		if _, err := os.Open(dir + args[0]); os.IsNotExist(err) {
+			return nil
+		}
+		return fmt.Errorf("Could not find file: %s", args[0])
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Enter password: ")
+		fmt.Println("Enter password to unlock file: ")
 		password, err := terminal.ReadPassword(0)
 
 		if err != nil {

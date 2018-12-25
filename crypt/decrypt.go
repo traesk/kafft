@@ -23,7 +23,7 @@ func Decrypt(path, filename string, password []byte) (string, error) {
 		return "", err
 	}
 
-	// Put the name in the 256 byte sized slice
+	// Get the name from the first 256 bytes
 	unpackedName, err := hex.DecodeString(string(decrypted[:256]))
 
 	file := decrypted[256:]

@@ -20,6 +20,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/traesk/kafft/util"
+
 	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/spf13/cobra"
@@ -27,11 +29,17 @@ import (
 )
 
 var delete bool
+var uniquePassword bool
 var dir string
+var printPassword bool
+var save bool
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.Flags().BoolVarP(&delete, "delete", "d", false, "delete original file after encryption")
+	rootCmd.Flags().BoolVarP(&delete, "delete", "d", false, "Delete original file after encryption")
+	rootCmd.Flags().BoolVarP(&uniquePassword, "uniquepassword", "u", false, "Make it possible to set a unique password for each file")
+	rootCmd.Flags().BoolVarP(&printPassword, "printpassword", "p", false, "Print the password set for each file")
+	rootCmd.Flags().BoolVarP(&save, "save", "s", false, "Write filename and password to file. Unsafe!")
 }
 func initConfig() {
 
@@ -42,46 +50,85 @@ var rootCmd = &cobra.Command{
 	Short: "Encrypt a file.",
 	Long:  "Encrypts a file, pass in the file name as argument.",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("No file specified")
+		for _, arg := range args {
+
+			if len(args) < 1 {
+				return errors.New("No file specified")
+			}
+
+			dir, err := os.Getwd()
+			if err != nil {
+				log.Fatal(err)
+				os.Exit(1)
+			}
+			if _, err := os.Open(dir + arg); !os.IsNotExist(err) {
+				return fmt.Errorf("Could not find file: %s", args[0])
+
+			}
 		}
-		// ../
-		dir, err := os.Getwd()
-		if err != nil {
-			log.Fatal(err)
-			os.Exit(1)
-		}
-		if _, err := os.Open(dir + args[0]); os.IsNotExist(err) {
-			return nil
-		}
-		return fmt.Errorf("Could not find file: %s", args[0])
+		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		// pew pew
-		fmt.Println("Enter password: ")
-		password, err := terminal.ReadPassword(0)
+		var password []byte
+		var passwordEntered bool
+		for _, arg := range args {
 
-		if err != nil {
-			fmt.Println("Erroneous password")
-			os.Exit(1)
+			if uniquePassword || !passwordEntered {
+				password = inputPassword()
+				passwordEntered = true
+			}
+			outputName, err := crypt.Encrypt(dir, arg, password, delete)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			// Tell the user it's done
+			if printPassword {
+				fmt.Print(printInfoPassword(outputName, password))
+			} else if save {
+				util.SaveInfo(outputName, string(password))
+				if err != nil {
+					log.Fatal(err)
+					os.Exit(1)
+				}
+			} else {
+				printInfo(outputName)
+
+			}
 		}
-
-		outputName, err := crypt.Encrypt(dir, args[0], password, delete)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		// Tell the user it's done
-		fmt.Println("File encrypted, please remember the password")
-		fmt.Println("New name: ", outputName)
-
+		fmt.Println()
 	},
 }
 
-// Execute gets rid of squigglies
+// Execute the application
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+func printInfo(outputName string) string {
+	return fmt.Sprintf(`
+	File encrypted, please remember the password.
+	New name: %s`, outputName)
+
+}
+func printInfoPassword(outputName string, password []byte) string {
+	return fmt.Sprintf(`
+	File encrypted, please remember the password.
+	New name: %s
+	Password: %s
+`, outputName, string(password))
+
+}
+func inputPassword() []byte {
+	fmt.Println("\nEnter password to lock file: ")
+	password, err := terminal.ReadPassword(0)
+	if err != nil {
+		fmt.Println("Erroneous password")
+		os.Exit(1)
+	}
+	fmt.Println(`
+Password entered. Encrypting...`)
+	return password
 }
