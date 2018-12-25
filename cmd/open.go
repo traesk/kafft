@@ -26,13 +26,8 @@ import (
 // openCmd represents the open command
 var openCmd = &cobra.Command{
 	Use:   "open",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Decrypt a file",
+	Long:  `Decrypts a file, pass in the name of the file as argument.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Enter password: ")
 		password, err := terminal.ReadPassword(0)
@@ -41,13 +36,13 @@ to quickly create a Cobra application.`,
 			fmt.Println("Erroneous password")
 			os.Exit(1)
 		}
-		err = crypt.Decrypt(dir, args[0], password)
+		name, err := crypt.Decrypt(dir, args[0], password)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 		// Tell the user it's done
-		fmt.Println("File decrypted")
+		fmt.Println("File decrypted: ", name)
 
 	},
 }

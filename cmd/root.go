@@ -39,8 +39,8 @@ func initConfig() {
 
 var rootCmd = &cobra.Command{
 	Use:   "kafft",
-	Short: "Explaining shit",
-	Long:  "Explaining shit in detail",
+	Short: "Encrypt a file.",
+	Long:  "Encrypts a file, pass in the file name as argument.",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("No file specified")
@@ -65,52 +65,7 @@ var rootCmd = &cobra.Command{
 			fmt.Println("Erroneous password")
 			os.Exit(1)
 		}
-		/*
-			// TODO: refactor
-			key := libdisco.Hash(password, 1024)
 
-			// Read the file here
-			// Get the name and format - append the file to it
-			inputFile, err := ioutil.ReadFile(dir + args[0])
-			if err != nil {
-				log.Fatal("Error reading file")
-				os.Exit(1)
-			}
-
-			// Arbitrary assumption that 256 bytes is enough for name + type
-			fileName := make([]byte, 256)
-
-			// Put the name in the 256 byte sized slice
-			n := hex.Encode(fileName, []byte(args[0]))
-			if n == 0 {
-				log.Fatal("Error decoding name: ", err)
-				os.Exit(1)
-			}
-
-			// Append the file to filename
-			plain := append(fileName, inputFile...)
-
-			// Encrypt
-			encrypted := libdisco.Encrypt(key, plain)
-
-			// Save the file
-			// TODO: Generate random name
-			name, err := util.GenerateName(16)
-			if err != nil {
-				log.Fatal("Error getting random name")
-				os.Exit(1)
-			}
-			output := dir + name
-			ioutil.WriteFile(output, encrypted, os.FileMode(0777))
-
-			// Optionally remove the file
-			if delete {
-				if err := os.Remove(args[0]); err != nil {
-					log.Fatal("Error removing file")
-					os.Exit(1)
-				}
-			}
-		*/
 		outputName, err := crypt.Encrypt(dir, args[0], password, delete)
 		if err != nil {
 			fmt.Println(err)
@@ -120,10 +75,6 @@ var rootCmd = &cobra.Command{
 		fmt.Println("File encrypted, please remember the password")
 		fmt.Println("New name: ", outputName)
 
-		/*
-			decrypted, _ := libdisco.Decrypt(key, encrypted)
-			fmt.Println("Encrypted: " + string(encrypted))
-			fmt.Println("Decrypted: " + string(decrypted))*/
 	},
 }
 

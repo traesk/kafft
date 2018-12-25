@@ -14,8 +14,7 @@ import (
 func Encrypt(path, filename string, password []byte, delete bool) (string, error) {
 	key := libdisco.Hash(password, 1024)
 
-	// Read the file here
-	// Get the name and format - append the file to it
+	// Read the file
 	inputFile, err := ioutil.ReadFile(path + filename)
 	if err != nil {
 		return "", err
@@ -38,7 +37,6 @@ func Encrypt(path, filename string, password []byte, delete bool) (string, error
 	encrypted := libdisco.Encrypt(key, plain)
 
 	// Save the file
-	// TODO: Generate random name
 	name, err := util.GenerateName(16)
 	if err != nil {
 		return "", err
