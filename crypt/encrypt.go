@@ -2,7 +2,6 @@ package crypt
 
 import (
 	"encoding/hex"
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -28,7 +27,6 @@ func Encrypt(path, filename string, password []byte, delete bool) (string, error
 	if n == 0 {
 		return "", err
 	}
-	fmt.Println(string(fileName))
 
 	// Append the file to filename
 	plain := append(fileName, inputFile...)
