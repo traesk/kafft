@@ -20,6 +20,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/traesk/kafft/util"
+
 	"github.com/spf13/cobra"
 	"github.com/traesk/kafft/crypt"
 	"golang.org/x/crypto/ssh/terminal"
@@ -59,7 +61,13 @@ var openCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		// Tell the user it's done
-		fmt.Println("File decrypted: ", name)
+		files, err := util.Unzip(dir+name, dir)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, f := range files {
+			fmt.Println("File(s) decrypted: ", f)
+		}
 
 	},
 }

@@ -3,13 +3,13 @@ package util
 import (
 	"archive/zip"
 	"bytes"
+	"io"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 /*
-
- */
-
 // ZipFiles to make them ready for encryption
 func ZipFiles(dir string) ([]byte, error) {
 	buf := new(bytes.Buffer)
@@ -40,7 +40,7 @@ func ZipFiles(dir string) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
-}
+}*/
 
 // Zip one or more files, return the zip
 func Zip(files []File) ([]byte, error) {
@@ -93,8 +93,42 @@ func ReadFiles(dir string, filenames []string) ([]File, error) {
 }
 
 // UnzipFiles after unencrypting it
-func UnzipFiles() {
+func Unzip(src, outputDir string) ([]string, error) {
+	var filenames []string
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+	for _, f := range r.File {
+		rc, err := f.Open()
+		if err != nil {
+			return nil, err
+		}
+		defer rc.Close()
+		fp := filepath.Join(outputDir + f.Name)
 
+		filenames = append(filenames, fp)
+		if f.FileInfo().IsDir() {
+			os.MkdirAll(fp, os.ModePerm)
+		} else {
+			if err = os.MkdirAll(filepath.Dir(fp), os.ModePerm); err != nil {
+				return nil, err
+			}
+
+			outputFile, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+			if err != nil {
+				return nil, err
+			}
+
+			_, err = io.Copy(outputFile, rc)
+			outputFile.Close()
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	return filenames, nil
 }
 
 // File used by ZipFiles

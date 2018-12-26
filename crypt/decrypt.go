@@ -1,9 +1,8 @@
 package crypt
 
 import (
-	"encoding/hex"
+	"fmt"
 	"io/ioutil"
-	"os"
 
 	"github.com/mimoo/disco/libdisco"
 )
@@ -20,16 +19,25 @@ func Decrypt(path, filename string, password []byte) (string, error) {
 
 	decrypted, err := libdisco.Decrypt(key, inputFile)
 	if err != nil {
+		fmt.Println("error decrypting")
 		return "", err
 	}
+	/*
+		// Get the name from the first 256 bytes
+		unpackedName, err := hex.DecodeString(string(decrypted[:256]))
 
-	// Get the name from the first 256 bytes
-	unpackedName, err := hex.DecodeString(string(decrypted[:256]))
+		file := decrypted[256:]
+	*/
 
-	file := decrypted[256:]
+	//output := path + filename + ".hei"
+	//fmt.Println("Writing: ", output)
+	file, err := ioutil.TempFile(path, "temp_*")
+	if err != nil {
+		return "", err
+	}
+	file.Write(decrypted)
+	defer file.Close()
+	//ioutil.WriteFile(output, decrypted, os.FileMode(0777))
 
-	output := path + string(unpackedName)
-	ioutil.WriteFile(output, file, os.FileMode(0777))
-
-	return string(unpackedName), nil
+	return file.Name(), nil
 }

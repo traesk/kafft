@@ -94,7 +94,7 @@ var rootCmd = &cobra.Command{
 					os.Exit(1)
 				}
 			} else {
-				printInfo(outputName)
+				fmt.Print(printInfo(outputName))
 
 			}
 		}
