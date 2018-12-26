@@ -12,15 +12,6 @@ import (
 func Encrypt(path, filename string, password []byte, delete bool) (string, error) {
 	key := libdisco.Hash(password, 1024)
 
-	// Read the file
-	/*
-		inputFile, err := ioutil.ReadFile(path + filename)
-		if err != nil {
-			return "", err
-		}
-	*/
-	// We don't need to get the name out with this, do we?
-	// The zip contains the name.
 	files, err := util.ReadFiles(path, []string{filename})
 	if err != nil {
 		return "", err
@@ -30,18 +21,6 @@ func Encrypt(path, filename string, password []byte, delete bool) (string, error
 		return "", err
 	}
 
-	// Arbitrary assumption that 256 bytes is enough for name + type
-	/*fileName := make([]byte, 256)
-
-	// Put the name in the 256 byte sized slice
-	n := hex.Encode(fileName, []byte(filename))
-	if n == 0 {
-		return "", err
-	}
-
-	// Append the file to filename
-	plain := append(fileName, inputFile...)
-	*/
 	// Encrypt
 	encrypted := libdisco.Encrypt(key, zip)
 
