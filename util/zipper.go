@@ -92,7 +92,7 @@ func ReadFiles(dir string, filenames []string) ([]File, error) {
 	return files, nil
 }
 
-// UnzipFiles after unencrypting it
+// Unzip and write to outputDir
 func Unzip(src, outputDir string) ([]string, error) {
 	var filenames []string
 	r, err := zip.OpenReader(src)
@@ -127,6 +127,11 @@ func Unzip(src, outputDir string) ([]string, error) {
 				return nil, err
 			}
 		}
+	}
+	// Remove temp file
+	err = os.Remove(src)
+	if err != nil {
+		return nil, err
 	}
 	return filenames, nil
 }
