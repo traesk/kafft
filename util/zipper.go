@@ -9,39 +9,6 @@ import (
 	"path/filepath"
 )
 
-/*
-// ZipFiles to make them ready for encryption
-func ZipFiles(dir string) ([]byte, error) {
-	buf := new(bytes.Buffer)
-	w := zip.NewWriter(buf)
-
-	files, err := ioutil.ReadDir(dir)
-	if err != nil {
-		return nil, err
-	}
-	for _, f := range files {
-		//fmt.Println("Reading file: ", f.Name())
-		file, err := ioutil.ReadFile(dir + "/" + f.Name())
-		if err != nil {
-			return nil, err
-		}
-		io, err := w.Create(f.Name())
-		if err != nil {
-			return nil, err
-		}
-		_, err = io.Write(file)
-		if err != nil {
-			return nil, err
-		}
-	}
-	err = w.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	return buf.Bytes(), nil
-}*/
-
 // Zip one or more files, return the zip
 func Zip(files []File) ([]byte, error) {
 	buf := new(bytes.Buffer)
